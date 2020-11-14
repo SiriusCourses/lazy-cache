@@ -1,0 +1,52 @@
+cabal-version:       >=1.10
+name:                lazy-cache
+version:             0.1.0.0
+author:              Alexander Vershilov
+maintainer:          alexander.vershilov@sirius.online
+copyright:           2019-2020 (C) Фонд "Талант и Успех"
+build-type:          Simple
+
+library
+  exposed-modules:
+    System.Cache
+    System.Cache.Impl.Ghc
+    System.Cache.Impl.MVar
+    System.Cache.Impl.NoCache
+  other-modules:
+    System.Cache.Internal.Interface
+  other-extensions:
+    RecursiveDo
+    TemplateHaskell
+  build-depends:
+    base >=4.12 && <5,
+    aeson,
+    hashable,
+    psqueues,
+    thyme,
+    vector-space
+  hs-source-dirs:      src
+  ghc-options: -Wall -O2
+  default-language:    Haskell2010
+  default-extensions:
+    LambdaCase
+    RecordWildCards
+    ScopedTypeVariables
+    OverloadedStrings
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Cheops.Cache.CacheSpec
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HUnit
+    , base >=4.7 && <5
+    , lazy-cache
+    , hashable
+    , hspec
+    , hspec-discover
+    , thyme
+  default-language: Haskell2010
