@@ -45,7 +45,6 @@ test-suite spec
   build-depends:
       HUnit
     , base >=4.7 && <5
-    , lazy-cache
     , hashable
     , hspec
     , hspec-discover
