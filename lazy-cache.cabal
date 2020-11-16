@@ -42,12 +42,12 @@ test-suite spec
   hs-source-dirs:
       test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends: hspec-discover:hspec-discover
   build-depends:
       HUnit
     , base >=4.7 && <5
     , lazy-cache
     , hashable
     , hspec
-    , hspec-discover
     , thyme
   default-language: Haskell2010
