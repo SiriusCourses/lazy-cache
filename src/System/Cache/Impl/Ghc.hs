@@ -1,4 +1,6 @@
 {-# LANGUAGE RecursiveDo #-}
+-- | Caching based on the GHC heap object properties and 
+-- relies on lazyness.
 module System.Cache.Impl.Ghc
   ( new
   ) where

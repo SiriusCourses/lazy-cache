@@ -48,7 +48,6 @@ inner new = describe "Cache service" $ do
       =<< Cache.requestOrInternal ch (Thyme.fromSeconds (2 :: Int)) () f
   it "handles exceptions" $ do
     ch <- new (Cache.Config d) :: IO (Cache.Handle Int Int)
-    let f _ = error "foo"
     ((Left (ErrorCall "foo")) @=?) =<<
        either (\(ErrorCallWithLocation s _) -> Left (ErrorCall s)) Right
          <$> try (Cache.requestOr ch (3::Int) (\_ -> error "foo"))

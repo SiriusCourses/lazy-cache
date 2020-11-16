@@ -1,0 +1,4 @@
+# Library for caching values.
+
+The library allows to cache result of an asynchronous computation for
+no longer than a given period of time.

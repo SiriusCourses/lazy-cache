@@ -1,3 +1,6 @@
+-- | Safer cache version that is implemented totally
+-- on the user level. Using 'MVar' as a synchronization
+-- primitive.
 module System.Cache.Impl.MVar
   ( new
   ) where

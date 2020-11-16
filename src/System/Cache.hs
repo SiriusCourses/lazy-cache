@@ -1,5 +1,8 @@
 {-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE TemplateHaskell #-}
+-- |
+-- General interface for the cache. This module is intended to be used
+-- in th user code.
 module System.Cache
   ( Handle(..)
   , Config(..)
@@ -18,6 +21,7 @@ import qualified System.Cache.Impl.MVar as MVar
 import System.Environment
 import System.IO.Unsafe
 
+-- | Wrapper to generate a config.
 mkConfig :: Int -> Config
 mkConfig n = Config { configLongestAge = fromSeconds n }
 
@@ -30,8 +34,12 @@ new = unsafePerformIO $ do
     _ -> pure $ Ghc.new
 
 
--- | Perform a request substituting current time.
-requestOr :: Handle a b -> a -> (a -> IO b) -> IO b
+-- | Perform a request.
+requestOr
+  :: Handle a b
+  -> a -- ^ Input parameters
+  -> (a -> IO b) -- ^ Function to cache.
+  -> IO b -- ^ Result.
 requestOr Handle {..} k f = do
   tm <- getPOSIXTime
   requestOrInternal tm k f
