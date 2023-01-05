@@ -12,8 +12,7 @@ module System.Cache
   ) where
 
 import Data.Hashable
-import Data.Thyme.Clock
-import Data.Thyme.Clock.POSIX
+import System.Clock.Seconds
 
 import System.Cache.Internal.Interface
 import qualified System.Cache.Impl.Ghc as Ghc
@@ -22,8 +21,11 @@ import System.Environment
 import System.IO.Unsafe
 
 -- | Wrapper to generate a config.
-mkConfig :: Int -> Config
-mkConfig n = Config { configLongestAge = fromSeconds n }
+mkConfig :: Int -> Clock -> Config
+mkConfig n clock = Config
+  { configLongestAge = fromNanoSecs (fromIntegral n * 1_000_000_000)
+  , configClock = clock
+  }
 
 -- | Set default cache implementation.
 new :: (Show a, Hashable a, Ord a) => Config -> IO (Handle a b)
@@ -41,6 +43,6 @@ requestOr
   -> (a -> IO b) -- ^ Function to cache.
   -> IO b -- ^ Result.
 requestOr Handle {..} k f = do
-  tm <- getPOSIXTime
+  tm <- getClockTime
   requestOrInternal tm k f
 

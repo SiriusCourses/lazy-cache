@@ -1,19 +1,23 @@
 -- | Safer cache version that is implemented totally
 -- on the user level. Using 'MVar' as a synchronization
 -- primitive.
+--
+-- While this implementation is slower in general case it may
+-- be more resilient to changes in GHC and RTS. This implementation
+-- is mostly used in order to sanity check the GHC one, and in order
+-- to be able to switch to this one without program recompilation.
 module System.Cache.Impl.MVar
   ( new
   ) where
 
-import Control.Exception
 import Control.Concurrent
-import Data.AdditiveGroup
-import Data.Hashable
-import Data.HashPSQ as PSQ
-import Data.IORef
-import Data.Thyme.Clock.POSIX
-import Data.Tuple
+import Control.Exception
 import Control.Monad
+import Data.HashPSQ as PSQ
+import Data.Hashable
+import Data.IORef
+import Data.Tuple
+import System.Clock.Seconds
 
 import System.Cache.Internal.Interface
 
@@ -36,26 +40,27 @@ new cfg@Config {..} = do
                    Nothing
                      -> updateLock cfg ref lock r tm k f
                    Just v
-                     | p >= tm ^-^ configLongestAge -> pure v
+                     | p >= tm - configLongestAge -> pure v
                      | otherwise -> updateLock cfg ref lock r tm k f
         atomicModifyIORef' ref $ swap . PSQ.alterMin
                 (\case
                   Nothing -> ((), Nothing)
                   Just (kk, p, v)
-                    | p < tm ^-^ configLongestAge -> ((), Nothing)
+                    | p < tm - configLongestAge -> ((), Nothing)
                     | otherwise -> ((), Just (kk, p, v))
                 )
         pure result
     , remove = \k -> do
        void $ atomicModifyIORef ref $ swap . PSQ.alter (const ((), Nothing)) k
+    , getClockTime = getTime configClock
     }
 
 -- | There is no value in the queue, but someone may already trying to create a lock,
 -- so we need to register a lock, verifying that it was registered concurrently.
 insertElement :: (Hashable k, Ord k)
   => Config
-  -> IORef (HashPSQ k POSIXTime (IORef (Maybe z), MVar (Maybe (POSIXTime, z))))
-  -> POSIXTime
+  -> IORef (HashPSQ k Seconds (IORef (Maybe z), MVar (Maybe (Seconds, z))))
+  -> Seconds
   -> k
   -> (k -> IO z)
   -> IO z
@@ -81,16 +86,16 @@ insertElement cfg ref tm k f = newEmptyMVar >>= \x -> go x `onException` (tryPut
 
 updateLock :: (Hashable k, Ord k)
   => Config
-  -> IORef (HashPSQ k POSIXTime (IORef (Maybe z), MVar (Maybe (POSIXTime, z))))
-  -> MVar (Maybe (POSIXTime, z))
+  -> IORef (HashPSQ k Seconds (IORef (Maybe z), MVar (Maybe (Seconds, z))))
+  -> MVar (Maybe (Seconds, z))
   -> IORef (Maybe z)
-  -> POSIXTime
+  -> Seconds 
   -> k
   -> (k -> IO z)
   -> IO z
 updateLock Config{..} ref lock inner tm k f  = modifyMVar lock $ \case
   Just x@(p, v) -- Result exists and is valid, we can just return it
-    | p >= tm ^-^ configLongestAge -> pure (Just x, v)
+    | p >= tm - configLongestAge -> pure (Just x, v)
   _ -> do -- There is no result or it's outdated, we can update it.
     value <- f k
     writeIORef inner (Just value)

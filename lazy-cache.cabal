@@ -2,10 +2,39 @@ cabal-version:       >=1.10
 name:                lazy-cache
 version:             0.1.0.0
 author:              Alexander Vershilov
-maintainer:          alexander.vershilov@sirius.online
-copyright:           2019-2020 (C) Фонд "Талант и Успех"
+maintainer:          backend-dev@sirius.online
+copyright:           2019-2022 (C) Фонд "Талант и Успех"
 build-type:          Simple
-description:         Simple cache system.
+description:         The library provides an interface for caching the results of IO actions.
+                     This library relies on a blackholing — mechanism that is used to implement lazy
+                     evaluation for avoiding concurrent runs of the action
+                    (this is where the name of the library comes from).
+                     .
+                     The library provides uses the following rules:
+                     1. when the function is called the successful result is cached by no more than a provided
+                        time;
+                     2. if the function ends with an exception, it will be rethrown, and the result will not be
+                        cached;
+                     3. if the function will be called with the same input value it immediately gets cached
+                        result;
+                     4. if functions are called concurrently with the different input values they will not
+                        block each other;
+                     5. if functions will be called concurrently with the same argument then only one will
+                        act, others will wait until the first one is finished and will either return the
+                        result once it's received, or will rethrow an exception if the first one
+                        exits with an exception;
+                     6. outdated values are cleared only on accesses to the cache, so if no action is called
+                        the data will not be cleared.
+                     
+         
+                     The library provides an interface for caching, and three implementations:
+                        1. "System.Cache.Impl.Ghc" — the main one based on GHC system
+                        2. "System.Cache.Impl.MVar" — implementation based on library functions
+                        3. "System.Cache.Impl.NoCache" — implementation that disables caching, but keeps the same interface 
+
+tested-with:
+  GHC == 9.2.2
+   || == 8.10.7
 
 library
   exposed-modules:
@@ -20,19 +49,18 @@ library
     TemplateHaskell
   build-depends:
     base >=4.12 && <5,
-    aeson >= 1.4 && <1.6,
-    hashable >=1.1.2.3 && <1.4,
+    hashable >=1.1.2.3 && <1.5,
     psqueues >=0.2 && <0.3,
-    thyme >=0.3 && <0.4,
-    vector-space >= 0 && <1
-  hs-source-dirs:      src
-  ghc-options: -Wall -O2
-  default-language:    Haskell2010
+    clock >= 0.8
+  hs-source-dirs: src
+  ghc-options: -Wall -O2 -Werror
+  default-language: Haskell2010
   default-extensions:
     LambdaCase
+    NumericUnderscores
+    OverloadedStrings
     RecordWildCards
     ScopedTypeVariables
-    OverloadedStrings
 
 test-suite spec
   type: exitcode-stdio-1.0
@@ -49,5 +77,5 @@ test-suite spec
     , lazy-cache
     , hashable
     , hspec
-    , thyme
+    , clock
   default-language: Haskell2010
