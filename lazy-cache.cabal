@@ -6,7 +6,7 @@ author:              Alexander Vershilov
 maintainer:          backend-dev@sirius.online
 copyright:           2019-2022 (C) Фонд "Талант и Успех"
 license:             MPL-2.0
-license-file:        License
+license-file:        LICENSE
 build-type:          Simple
 category:            System
 description:         The library provides an interface for caching the results of IO actions.
