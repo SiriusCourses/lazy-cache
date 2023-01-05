@@ -20,16 +20,13 @@ import System.Cache qualified as Cache
 import System.Cache.Impl.Ghc qualified as Cache.Ghc
 import System.Clock.Seconds
 
-input :: Int
-input = 60
-
 main :: IO ()
 main = do
-   cache <- Cache.GHC.new do
-     Cache.mkConfig 60 MonotonicCoarse
+   cache <- Cache.Ghc.new do
+     Cache.mkConfig 60 Monotonic
    -- we create a cached version of computation
    -- in order to hide implementation
-   let cachedTimeout input = requestOrCache cache input \i -> do
+   let cachedTimeout input = Cache.requestOr cache input \i -> do
          threadDelay $ i * 1_000_000
          pure i
    -- We use our cached function

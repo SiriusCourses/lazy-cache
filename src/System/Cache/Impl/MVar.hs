@@ -6,6 +6,9 @@
 -- be more resilient to changes in GHC and RTS. This implementation
 -- is mostly used in order to sanity check the GHC one, and in order
 -- to be able to switch to this one without program recompilation.
+--
+-- However if you need strict guarantees that the only one action with
+-- the same input is run concurrently you should prefer this implementation.
 module System.Cache.Impl.MVar
   ( new
   ) where
@@ -21,7 +24,19 @@ import System.Clock.Seconds
 
 import System.Cache.Internal.Interface
 
--- | Create new cache service.
+-- | Create new cache handle. Keeps priority queue from psqueues package inside.
+--
+-- Properties:
+--
+--  * if multiple threads are running an IO action with the same input
+--    concurrently then only one will run, all the rest will wait for that
+--    action and will either return a value, or throw an exception depending
+--    on the the result of the first one
+--  * storage is cleared only during access, it will remove redundant work
+--    but may lead to the situation when cached values are stored in memory
+--    for a longer period that it was expected
+--  * psqueue structure uses both 'Hashable' and 'Ord' constraints and is
+--    not vulnerable to the hash collision attacks.
 --
 new
   :: (Show a, Hashable a, Ord a)

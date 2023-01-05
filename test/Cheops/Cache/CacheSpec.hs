@@ -13,6 +13,7 @@ import Test.HUnit.Base               ((@=?))
 import qualified System.Cache                  as Cache
 import qualified System.Cache.Impl.Ghc         as Ghc
 import qualified System.Cache.Impl.MVar        as MVar
+import System.Cache.Internal.Interface as Cache
 
 spec :: Spec
 spec = do

@@ -12,29 +12,33 @@ category:            System
 description:         The library provides an interface for caching the results of IO actions.
                      This library relies on a blackholing — mechanism that is used to implement lazy
                      evaluation for avoiding concurrent runs of the action
-                    (this is where the name of the library comes from).
+                     (this is where the name of the library comes from).
                      .
-                     The library provides uses the following rules:
-                     1. when the function is called the successful result is cached by no more than a provided
-                        time;
-                     2. if the function ends with an exception, it will be rethrown, and the result will not be
-                        cached;
-                     3. if the function will be called with the same input value it immediately gets cached
-                        result;
-                     4. if functions are called concurrently with the different input values they will not
-                        block each other;
-                     5. if functions will be called concurrently with the same argument then only one will
-                        act, others will wait until the first one is finished and will either return the
-                        result once it's received, or will rethrow an exception if the first one
-                        exits with an exception;
-                     6. outdated values are cleared only on accesses to the cache, so if no action is called
-                        the data will not be cleared.
-                     
-         
+                     The library provides caching mechangins with properties:
+                     .
+                       1. when the function is called the successful result is cached by no more than a provided time;
+                       2. if the function ends with an exception, it will be rethrown, and the result will not be cached;
+                       3. if the function will be called with the same input value it immediately gets cached
+                          result;
+                       4. if functions are called concurrently with the different input values they will not
+                          block each other;
+                       5. if functions will be called concurrently with the same argument then only one will
+                          act, others will wait until the first one is finished and will either return the
+                          result once it's received, or will rethrow an exception if the first one
+                          exits with an exception;
+                       6. outdated values are cleared only on accesses to the cache, so if no action is called
+                          the data will not be cleared.
+                     .
                      The library provides an interface for caching, and three implementations:
-                        1. "System.Cache.Impl.Ghc" — the main one based on GHC system
-                        2. "System.Cache.Impl.MVar" — implementation based on library functions
+                     .
+                        1. "System.Cache.Impl.Ghc" — the main one based on GHC system;
+
+                        2. "System.Cache.Impl.MVar" — implementation based on library functions;
+
                         3. "System.Cache.Impl.NoCache" — implementation that disables caching, but keeps the same interface 
+extra-source-files:
+   CHANGELOG.md
+   Readme.md
 
 tested-with:
   GHC == 9.2.2
@@ -50,7 +54,6 @@ library
     System.Cache.Impl.Ghc
     System.Cache.Impl.MVar
     System.Cache.Impl.NoCache
-  other-modules:
     System.Cache.Internal.Interface
   other-extensions:
     RecursiveDo
