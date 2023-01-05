@@ -1,10 +1,14 @@
 cabal-version:       >=1.10
 name:                lazy-cache
-version:             0.1.0.0
+synopsis:            Library for caching IO action that leverages on GHC RTS implementation
+version:             0.2.0.0
 author:              Alexander Vershilov
 maintainer:          backend-dev@sirius.online
 copyright:           2019-2022 (C) Фонд "Талант и Успех"
+license:             MPL-2.0
+license-file:        License
 build-type:          Simple
+category:            System
 description:         The library provides an interface for caching the results of IO actions.
                      This library relies on a blackholing — mechanism that is used to implement lazy
                      evaluation for avoiding concurrent runs of the action
@@ -36,6 +40,10 @@ tested-with:
   GHC == 9.2.2
    || == 8.10.7
 
+source-repository head
+  type: git
+  location: https://github.com/cheopslab/lazy-cache
+
 library
   exposed-modules:
     System.Cache
@@ -53,7 +61,7 @@ library
     psqueues >=0.2 && <0.3,
     clock >= 0.8
   hs-source-dirs: src
-  ghc-options: -Wall -O2 -Werror
+  ghc-options: -Wall
   default-language: Haskell2010
   default-extensions:
     LambdaCase
