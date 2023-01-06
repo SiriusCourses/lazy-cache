@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 -- |
 -- General interface for the cache. This module is intended to be used
--- in th user code.
+-- in the user code.
 --
 -- __TLDR__
 -- 
