@@ -14,7 +14,7 @@ description:         The library provides an interface for caching the results o
                      evaluation for avoiding concurrent runs of the action
                      (this is where the name of the library comes from).
                      .
-                     The library provides caching mechangins with properties:
+                     The library provides caching mechanismsl with the following properties:
                      .
                        1. when the function is called the successful result is cached by no more than a provided time;
                        2. if the function ends with an exception, it will be rethrown, and the result will not be cached;
