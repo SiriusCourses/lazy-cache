@@ -29,6 +29,10 @@ description:         The library provides an interface for caching the results o
                        6. outdated values are cleared only on accesses to the cache, so if no action is called
                           the data will not be cleared.
                      .
+                     The main entry point of the library is "System.Cache" module, it explains how to
+                     use the library and provides the public API, that does not depend on the actual
+                     store implementation.
+                     .
                      The library provides an interface for caching, and three implementations:
                      .
                         1. "System.Cache.Impl.Ghc" — the main one based on GHC system;
@@ -36,6 +40,9 @@ description:         The library provides an interface for caching the results o
                         2. "System.Cache.Impl.MVar" — implementation based on library functions;
 
                         3. "System.Cache.Impl.NoCache" — implementation that disables caching, but keeps the same interface 
+                     .
+                     If you want to implement your own caching mechanism, or use internal API, you
+                     can refer to the "System.Cache.Internal.Interface" module for an additional documentation.
 extra-source-files:
    CHANGELOG.md
    Readme.md
