@@ -24,7 +24,7 @@
 --      Cache.'System.Cache.mkConfig' 60 'System.Clock.Seconds.MonotonicCoarse'
 --    -- we create a cached version of computation
 --    -- in order to hide implementation
---    let cachedTimeout = Cache.'System.Cache.mkCached' @cache@ \i -> do
+--    let cachedTimeout = Cache.'System.Cache.cacheIO' @cache@ \\i -> do
 --          threadDelay $ i * 1_000_000
 --          pure i
 --    -- We use our cached function

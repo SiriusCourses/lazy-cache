@@ -26,7 +26,7 @@ main = do
      Cache.mkConfig 60 Monotonic
    -- we create a cached version of computation
    -- in order to hide implementation
-   let cachedTimeout input = Cache.requestOr cache input \i -> do
+   let cachedTimeout input = Cache.cacheIO cache \i -> do
          threadDelay $ i * 1_000_000
          pure i
    -- We use our cached function
